@@ -1,16 +1,12 @@
 #include-once
 
-;~ UAI_Fight($x, $y)                                    			; Normal fight
-;~ UAI_Fight($x, $y, 1320, 3500, $mode, False, 1234)    			; Kill priority 1234
-;~ UAI_Fight($x, $y, 1320, 3500, $mode, False, -1234)   			; Avoid 1234
-;~ UAI_Fight($x, $y, 1320, 3500, $mode, False, [1234, -5678])  		; Priority 1234 + Avoid 5678
-;~ UAI_Fight($x, $y, 1320, 3500, $mode, False, [1234, -5678], True) ; Same + KillOnly
-Func UAI_Fight($a_f_x, $a_f_y, $a_f_AggroRange = 1320, $a_f_MaxDistanceToXY = 3500, $a_i_FightMode = $g_i_FinisherMode, $a_b_UseSwitchSet = False, $a_v_PlayerNumber = 0, $a_b_KillOnly = False, $a_s_ExitCallback = "")
+Func UAI_Fight($a_f_x, $a_f_y, $a_f_AggroRange = 1320, $a_f_MaxDistanceToXY = 3500, $a_i_FightMode = $g_i_FinisherMode, $a_b_UseSwitchSet = False, $a_v_PlayerNumber = 0, $a_b_KillOnly = False, $a_s_ExitCallback = "", $a_i_CallTargetMode = $GC_UAI_CALLTARGET_CALL)
 	$g_i_BestTarget = 0
 	$g_i_ForceTarget = 0
 	$g_i_LastCalledTarget = 0
 	$g_i_FightMode = $a_i_FightMode
 	$g_b_CacheWeaponSet = $a_b_UseSwitchSet
+	$g_i_CallTargetMode = $a_i_CallTargetMode
 	$g_v_AvoidPlayerNumbers = -1
 
 	Local $l_i_MyOldMap = Map_GetMapID(), $l_i_MapLoadingOld = Map_GetInstanceInfo("Type")
@@ -58,6 +54,10 @@ Func UAI_Fight($a_f_x, $a_f_y, $a_f_AggroRange = 1320, $a_f_MaxDistanceToXY = 35
 		If $g_i_ForceTarget <> 0 And UAI_GetAgentInfoByID($g_i_ForceTarget, $GC_UAI_AGENT_IsDead) Then
 			$g_i_ForceTarget = UAI_FindAgentByPlayerNumber($l_v_PriorityTargets, -2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 			If $g_i_ForceTarget = 0 And $a_b_KillOnly Then ExitLoop
+		EndIf
+		If $g_i_CallTargetMode = $GC_UAI_CALLTARGET_FOLLOW Then
+			Local $l_i_FollowTarget = UAI_GetPartyCalledTarget()
+			If $l_i_FollowTarget <> 0 Then $g_i_ForceTarget = $l_i_FollowTarget
 		EndIf
 		UAI_UseSkills($a_f_x, $a_f_y, $a_f_AggroRange, $a_f_MaxDistanceToXY)
 	Until UAI_CountEnemyInPartyAggroRange($a_f_AggroRange) = 0 Or Agent_GetAgentInfo(-2, "IsDead") Or Party_IsWiped() Or Map_GetMapID() <> $l_i_MyOldMap Or Map_GetInstanceInfo("Type") <> $l_i_MapLoadingOld Or ($a_s_ExitCallback <> "" And Call($a_s_ExitCallback))
@@ -248,4 +248,4 @@ Func UAI_DropBundle($a_f_AggroRange = 1320)
 			Return
 		EndIf
 	Next
-EndFunc
+EndFunc   ;==>UAI_DropBundle
