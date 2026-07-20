@@ -506,7 +506,7 @@ Func BestTarget_SignetOfDeadlyCorruption($a_f_AggroRange)
 	; Signet. Target foe takes 5...29...35 damage for each condition on that foe (maximum 130 damage).
 	; Concise description
 	; Signet. Deals 5...29...35 damage (maximum 130) for each condition on target foe.
-	Return UAI_GetBestTargetByConditionCount(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetBestTargetByConditionCount(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsDual")
 EndFunc
 
 Func CanUse_SignetOfDeadlyCorruptionPvp()
@@ -515,7 +515,7 @@ Func CanUse_SignetOfDeadlyCorruptionPvp()
 EndFunc
 
 Func BestTarget_SignetOfDeadlyCorruptionPvp($a_f_AggroRange)
-	Return 0
+	Return UAI_GetBestTargetByConditionCount(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsDual")
 EndFunc
 
 Func CanUse_SignetOfDevotion()
